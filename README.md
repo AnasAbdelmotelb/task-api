@@ -10,6 +10,7 @@ A simple REST API built with FastAPI for managing tasks.
 - Update an existing task
 - Delete a task
 - Health check endpoint
+- Interactive Swagger documentation
 
 ## Technologies
 
@@ -17,13 +18,14 @@ A simple REST API built with FastAPI for managing tasks.
 - FastAPI
 - Uvicorn
 - Git
+- GitHub
 
 ## Installation
 
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/AnasAbdelmotelb/task-api.git
 cd task-api
 ```
 
@@ -35,7 +37,7 @@ python3 -m venv venv
 
 Activate it:
 
-**macOS/Linux**
+**macOS / Linux**
 
 ```bash
 source venv/bin/activate
@@ -47,48 +49,40 @@ Install dependencies:
 pip install fastapi uvicorn
 ```
 
-## Running the API
+Run the server:
 
 ```bash
 uvicorn main:app --reload
-```
-
-The API will run at:
-
-```
-http://127.0.0.1:8000
 ```
 
 ## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | / | API information |
-| GET | /health | Health check |
-| GET | /tasks | Get all tasks |
-| GET | /tasks/{id} | Get a task by ID |
-| POST | /tasks | Create a task |
-| PUT | /tasks/{id} | Update a task |
-| DELETE | /tasks/{id} | Delete a task |
+| GET | `/` | API information |
+| GET | `/health` | Health check |
+| GET | `/tasks` | Get all tasks |
+| GET | `/tasks/{task_id}` | Get a task by ID |
+| POST | `/tasks` | Create a new task |
+| PUT | `/tasks/{task_id}` | Update a task |
+| DELETE | `/tasks/{task_id}` | Delete a task |
 
-## Example Request
+## API Documentation
 
-```bash
-curl http://127.0.0.1:8000/tasks
+After running the application, open:
+
+```
+http://127.0.0.1:8000/docs
 ```
 
-## Example Response
+FastAPI automatically provides interactive Swagger documentation.
 
-```json
-[
-  {
-    "id": 1,
-    "title": "Buy coffee",
-    "done": true
-  }
-]
-```
+## Repository
+
+GitHub Repository:
+
+https://github.com/AnasAbdelmotelb/task-api
 
 ## Author
 
-Anas Mansour
+Anas Abdelmotelb Mansour
