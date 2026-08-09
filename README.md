@@ -83,6 +83,13 @@ GitHub Repository:
 
 https://github.com/AnasAbdelmotelb/task-api
 
+## Project Status
+
+This project was completed as part of a FastAPI REST API assignment.
+
+GitHub Repository:
+https://github.com/AnasAbdelmotelb/task-api
+
 ## Author
 
 Anas Abdelmotelb Mansour
