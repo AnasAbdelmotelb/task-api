@@ -102,15 +102,35 @@ def get_task(task_id: int):
     return dict(row)
 
 
-@app.post("/tasks")
+@app.post("/tasks", status_code=201)
 def create_task(task: Task):
-    new_task = {
-        "id": len(tasks) + 1,
-        "title": task.title,
-        "done": task.done
-    }
-    tasks.append(new_task)
-    return new_task
+    if not task.title.strip():
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Title is required"}
+        )
+
+    conn = sqlite3.connect("tasks.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO tasks (title, done) VALUES (?, ?)",
+        (task.title, int(task.done))
+    )
+
+    task_id = cursor.lastrowid
+    conn.commit()
+
+    cursor.execute(
+        "SELECT * FROM tasks WHERE id = ?",
+        (task_id,)
+    )
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return dict(row)
 
 
 @app.put("/tasks/{task_id}")
