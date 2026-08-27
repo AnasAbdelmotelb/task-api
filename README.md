@@ -67,6 +67,40 @@ uvicorn main:app --reload
 | PUT | `/tasks/{task_id}` | Update a task |
 | DELETE | `/tasks/{task_id}` | Delete a task |
 
+## SQLite Database
+
+The API uses SQLite for persistent task storage.
+
+Database file:
+
+`tasks.db`
+
+The `tasks` table contains:
+
+- `id` - unique task identifier
+- `title` - task title
+- `done` - completion status (0 = incomplete, 1 = complete)
+
+During development, the database was inspected using DB Browser for SQLite.
+
+Example SQL queries:
+
+```sql
+SELECT * FROM tasks;
+
+SELECT * FROM tasks
+WHERE done = 1;
+
+SELECT * FROM tasks
+WHERE done = 0;
+
+SELECT * FROM tasks
+WHERE title LIKE '%FastAPI%';
+
+SELECT COUNT(*) AS total_tasks
+FROM tasks;
+```
+
 ## API Documentation
 
 After running the application, open:
