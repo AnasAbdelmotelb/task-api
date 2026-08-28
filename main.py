@@ -192,3 +192,26 @@ def delete_task(task_id: int):
 
     return Response(status_code=204)
 
+@app.get("/stats")
+def get_stats():
+    conn = sqlite3.connect("tasks.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM tasks")
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE done = 1")
+    completed = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tasks WHERE done = 0")
+    pending = cursor.fetchone()[0]
+
+    conn.close()
+
+    return {
+        "total": total,
+        "completed": completed,
+        "pending": pending
+    }
+
+
