@@ -118,6 +118,18 @@ http://127.0.0.1:8000/docs
 
 FastAPI automatically provides interactive Swagger documentation.
 
+## Validation and Error Handling
+
+The API includes validation and error handling for task operations.
+
+- Task titles cannot be empty or contain only whitespace.
+- Invalid task data returns `400 Bad Request`.
+- Requests for tasks that do not exist return `404 Not Found`.
+- Successful task creation returns `201 Created`.
+- Successful deletion returns `204 No Content`.
+
+These cases were verified using API requests during development.
+
 ## Repository
 
 GitHub Repository:
@@ -126,10 +138,7 @@ https://github.com/AnasAbdelmotelb/task-api
 
 ## Project Status
 
-This project was completed as part of a FastAPI REST API assignment.
-
-GitHub Repository:
-https://github.com/AnasAbdelmotelb/task-api
+This project was completed as part of a FastAPI REST API assignment using FastAPI and SQLite for persistent task storage.
 
 ## Author
 
