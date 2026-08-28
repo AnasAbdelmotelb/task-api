@@ -69,6 +69,10 @@ uvicorn main:app --reload
 
 ## SQLite Database
 
+SQLite was chosen because it is lightweight, requires no separate database server or setup, stores the entire database in a single file, and keeps data persistent across application restarts.
+
+The `tasks.db` file is created automatically when the application starts if it does not already exist.
+
 The API uses SQLite for persistent task storage.
 
 Database file:
@@ -100,6 +104,9 @@ WHERE title LIKE '%FastAPI%';
 SELECT COUNT(*) AS total_tasks
 FROM tasks;
 ```
+## Database Screenshot
+
+![SQLite database in DB Browser](db-browser.png)
 
 ## API Documentation
 
