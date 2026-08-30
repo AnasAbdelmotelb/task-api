@@ -110,7 +110,7 @@ The application uses SQLite for persistent task storage.
 
 The screenshot below shows the `tasks` table containing the three example tasks:
 
-![SQLite Database](database-screenshot.png
+![SQLite Database](database-screenshot.png)
 
 ## API Documentation
 
