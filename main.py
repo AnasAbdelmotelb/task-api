@@ -65,18 +65,36 @@ def health():
     }
 
 
+
 @app.get("/tasks")
-def get_tasks():
+def get_tasks(search: str = None, done: bool = None):
     conn = sqlite3.connect("tasks.db")
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM tasks")
-    rows = cursor.fetchall()
+    if search and done is not None:
+        cursor.execute(
+            "SELECT * FROM tasks WHERE title LIKE ? AND done = ?",
+            (f"%{search}%", int(done))
+        )
+    elif search:
+        cursor.execute(
+            "SELECT * FROM tasks WHERE title LIKE ?",
+            (f"%{search}%",)
+        )
+    elif done is not None:
+        cursor.execute(
+            "SELECT * FROM tasks WHERE done = ?",
+            (int(done),)
+        )
+    else:
+        cursor.execute("SELECT * FROM tasks")
 
+    rows = cursor.fetchall()
     conn.close()
 
     return [dict(row) for row in rows]
+
 
 
 @app.get("/tasks/{task_id}")
