@@ -106,7 +106,11 @@ FROM tasks;
 ```
 ## Database Screenshot
 
-![SQLite database in DB Browser](db-browser.png)
+The application uses SQLite for persistent task storage.
+
+The screenshot below shows the `tasks` table containing the three example tasks:
+
+![SQLite Database](database-screenshot.png
 
 ## API Documentation
 
