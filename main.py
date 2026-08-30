@@ -88,7 +88,7 @@ def get_tasks(search: str = None, done: bool = None):
             (int(done),)
         )
     else:
-        cursor.execute("SELECT * FROM tasks")
+        cursor.execute("SELECT * FROM tasks ORDER BY title")
 
     rows = cursor.fetchall()
     conn.close()
