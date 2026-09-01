@@ -1,6 +1,7 @@
 import sqlite3
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -9,6 +10,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=400,
+        content={"error": "Invalid request data"}
+    )
 
 class Task(BaseModel):
     title: str
