@@ -72,6 +72,20 @@ Real credentials and secrets should not be committed to the repository.
 
 Running with Docker Compose
 
+## PostgreSQL Database Verification
+
+The application stores task data persistently in PostgreSQL.
+
+The following screenshot shows the `tasks` table queried directly from the PostgreSQL container:
+
+```sql
+SELECT * FROM tasks ORDER BY id;
+```
+
+![PostgreSQL Database Screenshot](postgres-database-screenshot.png)
+
+The persisted records remain available after stopping and restarting the Docker Compose stack, confirming that the PostgreSQL Docker volume is working correctly.
+
 Make sure Docker Desktop is running.
 
 Build and start the application:
