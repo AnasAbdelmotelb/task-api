@@ -1,149 +1,223 @@
-# Task API
+# Task API — FastAPI, PostgreSQL & Docker
 
-A simple REST API built with FastAPI for managing tasks.
+A RESTful Task Management API built with FastAPI and PostgreSQL, containerized using Docker Compose.
+
+The project was originally implemented using SQLite and was migrated to PostgreSQL as part of the A3 assignment.
 
 ## Features
 
-- Get all tasks
-- Get a task by ID
-- Create a new task
-- Update an existing task
-- Delete a task
-- Health check endpoint
-- Interactive Swagger documentation
+- Create tasks
+- Retrieve all tasks
+- Retrieve a task by ID
+- Update tasks
+- Delete tasks
+- Search tasks by title
+- Filter tasks by completion status
+- Task statistics
+- Request validation and error handling
+- PostgreSQL persistent storage
+- Docker Compose support
+- Interactive Swagger API documentation
 
-## Technologies
+## Technology Stack
 
-- Python 3
+- Python
 - FastAPI
+- Pydantic
+- PostgreSQL
+- psycopg
 - Uvicorn
-- Git
-- GitHub
+- Docker
+- Docker Compose
 
-## Installation
+## Project Structure
 
-Clone the repository:
+```text
+task-api/
+├── main.py
+├── repository.py
+├── requirements.txt
+├── Dockerfile
+├── compose.yaml
+├── .env.example
+├── .gitignore
+└── README.md
 
-```bash
-git clone https://github.com/AnasAbdelmotelb/task-api.git
-cd task-api
-```
+PostgreSQL Database
 
-Create a virtual environment:
+The application uses PostgreSQL for persistent task storage.
 
-```bash
-python3 -m venv venv
-```
+The tasks table contains:
 
-Activate it:
+Column	Type	Description
+id	SERIAL PRIMARY KEY	Unique task identifier
+title	TEXT NOT NULL	Task title
+done	BOOLEAN	Task completion status
 
-**macOS / Linux**
+The application automatically creates the table if it does not already exist.
 
-```bash
-source venv/bin/activate
-```
+Example tasks are inserted when the table is empty.
 
-Install dependencies:
+Environment Configuration
 
-```bash
-pip install fastapi uvicorn
-```
+The PostgreSQL connection is configured using the DATABASE_URL environment variable.
 
-Run the server:
+Example:
 
-```bash
-uvicorn main:app --reload
-```
+DATABASE_URL=postgresql://postgres:postgres@db:5432/tasks
 
-## API Endpoints
+An example configuration is provided in .env.example.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API information |
-| GET | `/health` | Health check |
-| GET | `/tasks` | Get all tasks |
-| GET | `/tasks/{task_id}` | Get a task by ID |
-| POST | `/tasks` | Create a new task |
-| PUT | `/tasks/{task_id}` | Update a task |
-| DELETE | `/tasks/{task_id}` | Delete a task |
+Real credentials and secrets should not be committed to the repository.
 
-## SQLite Database
+Running with Docker Compose
 
-SQLite was chosen because it is lightweight, requires no separate database server or setup, stores the entire database in a single file, and keeps data persistent across application restarts.
+Make sure Docker Desktop is running.
 
-The `tasks.db` file is created automatically when the application starts if it does not already exist.
+Build and start the application:
 
-The API uses SQLite for persistent task storage.
+docker compose up --build -d
 
-Database file:
+Check the containers:
 
-`tasks.db`
+docker compose ps
 
-The `tasks` table contains:
+The API is available at:
 
-- `id` - unique task identifier
-- `title` - task title
-- `done` - completion status (0 = incomplete, 1 = complete)
+http://localhost:8000
 
-During development, the database was inspected using DB Browser for SQLite.
+Swagger UI:
 
-Example SQL queries:
+http://localhost:8000/docs
 
-```sql
-SELECT * FROM tasks;
+Stop the containers:
 
-SELECT * FROM tasks
-WHERE done = 1;
+docker compose down
+API Endpoints
+Method	Endpoint	Description
+GET	/tasks	Retrieve all tasks
+GET	/tasks/{task_id}	Retrieve a task by ID
+POST	/tasks	Create a new task
+PUT	/tasks/{task_id}	Update a task
+DELETE	/tasks/{task_id}	Delete a task
+GET	/stats	Retrieve task statistics
+Search and Filtering
 
-SELECT * FROM tasks
-WHERE done = 0;
+Search tasks by title:
 
-SELECT * FROM tasks
-WHERE title LIKE '%FastAPI%';
+GET /tasks?search=FastAPI
 
-SELECT COUNT(*) AS total_tasks
-FROM tasks;
-```
-## Database Screenshot
+Filter completed tasks:
 
-The application uses SQLite for persistent task storage.
+GET /tasks?done=true
 
-The screenshot below shows the `tasks` table containing the three example tasks:
+Filter pending tasks:
 
-![SQLite Database](database-screenshot.png)
+GET /tasks?done=false
 
-## API Documentation
+Search and filtering can also be combined:
 
-After running the application, open:
+GET /tasks?search=FastAPI&done=true
+Example API Requests
 
-```
-http://127.0.0.1:8000/docs
-```
+Retrieve all tasks:
+
+curl http://localhost:8000/tasks
+
+Create a task:
+
+curl -X POST http://localhost:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Docker Compose persistence test","done":false}'
+
+Retrieve statistics:
+
+curl http://localhost:8000/stats
+Validation and Error Handling
+
+The API provides validation and appropriate HTTP status codes.
+
+Invalid request data returns 400 Bad Request
+Empty or whitespace-only titles return 400 Bad Request
+Non-existing tasks return 404 Not Found
+Successful task creation returns 201 Created
+Successful task deletion returns 204 No Content
+PostgreSQL Persistence
+
+PostgreSQL data is stored in a persistent Docker volume.
+
+This allows task data to survive container restarts.
+
+Persistence can be verified using:
+
+docker compose down
+docker compose up -d
+curl http://localhost:8000/tasks
+
+Previously created tasks should still be available after the containers restart.
+
+Database Verification
+
+The PostgreSQL database can be inspected directly from the database container:
+
+docker compose exec db psql -U postgres -d tasks
+
+Example SQL query:
+
+SELECT * FROM tasks ORDER BY id;
+
+Additional queries:
+
+SELECT * FROM tasks WHERE done = TRUE;
+
+SELECT * FROM tasks WHERE done = FALSE;
+
+SELECT COUNT(*) AS total_tasks FROM tasks;
+
+Exit PostgreSQL:
+
+\q
+
+API Documentation
 
 FastAPI automatically provides interactive Swagger documentation.
 
-## Validation and Error Handling
+Open:
 
-The API includes validation and error handling for task operations.
+http://localhost:8000/docs
 
-- Task titles cannot be empty or contain only whitespace.
-- Invalid task data returns `400 Bad Request`.
-- Requests for tasks that do not exist return `404 Not Found`.
-- Successful task creation returns `201 Created`.
-- Successful deletion returns `204 No Content`.
+Swagger UI can be used to inspect and test all API endpoints.
 
-These cases were verified using API requests during development.
+Git Workflow
 
-## Repository
+The PostgreSQL and Docker migration was developed on the feature branch:
+
+a3-postgres-docker
+
+The migration included separate commits for:
+
+PostgreSQL environment configuration
+Migration of the Task API from SQLite to PostgreSQL
+Docker Compose setup for FastAPI and PostgreSQL
+
+The feature branch was merged into main using a GitHub Pull Request.
+
+Repository
 
 GitHub Repository:
 
 https://github.com/AnasAbdelmotelb/task-api
 
-## Project Status
+Project Status
 
-This project was completed as part of a FastAPI REST API assignment using FastAPI and SQLite for persistent task storage.
+A3 PostgreSQL Migration and Docker Compose Setup completed successfully.
 
-## Author
+The Task API now runs using:
+
+FastAPI + PostgreSQL + Docker Compose
+
+with persistent PostgreSQL task storage.
+
+Author
 
 Anas Abdelmotelb Mansour
