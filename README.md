@@ -152,6 +152,19 @@ GET /tasks?search=FastAPI&done=true
 ```bash
 curl http://localhost:8000/tasks
 ```
+### Example Response with HTTP Headers
+
+```text
+HTTP/1.1 200 OK
+server: uvicorn
+content-type: application/json
+
+[
+  {"id":1,"title":"Buy milk","done":false},
+  {"id":5,"title":"Docker Compose persistence test","done":false},
+  {"id":3,"title":"Finish internship assignment","done":false},
+  {"id":2,"title":"Learn FastAPI","done":true}
+]
 
 ### Create a Task
 
