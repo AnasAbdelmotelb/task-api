@@ -165,7 +165,7 @@ content-type: application/json
   {"id":3,"title":"Finish internship assignment","done":false},
   {"id":2,"title":"Learn FastAPI","done":true}
 ]
-
+```
 ### Create a Task
 
 ```bash
