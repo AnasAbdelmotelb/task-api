@@ -264,6 +264,24 @@ http://localhost:8000/docs
 
 Swagger UI can be used to inspect and test all API endpoints.
 
+## Clean Clone Verification
+
+The project was tested from a fresh clone of the GitHub repository to verify that it can be reproduced from scratch.
+
+The following steps were successfully performed:
+
+```bash
+git clone https://github.com/AnasAbdelmotelb/task-api.git
+cd task-api
+cp .env.example .env
+docker compose up --build -d
+docker compose ps
+curl -i http://localhost:8000/tasks
+```
+The Docker Compose stack started successfully, including the FastAPI application and PostgreSQL database, and the API returned `HTTP/1.1 200 OK`.
+
+![Clean Clone Verification](clean-clone-test.png)
+
 ## Git Workflow
 
 The PostgreSQL and Docker migration was developed on the feature branch:
