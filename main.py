@@ -38,8 +38,14 @@ def get_connection():
 
 app = FastAPI(
     title="Task API",
-    description="A simple REST API for managing tasks",
-    version="1.0.0"
+    description="A simple REST API for managing tasks, secured with Supabase Auth",
+    version="1.0.0",
+    openapi_tags=[
+        {"name": "Auth", "description": "Sign up, log in, and log out via Supabase Auth."},
+        {"name": "Protected", "description": "Requires Authorization: Bearer <access_token>."},
+        {"name": "Public", "description": "No authentication required."},
+        {"name": "Tasks", "description": "Original A1-A3 task management endpoints."},
+    ]
 )
 
 
@@ -144,7 +150,7 @@ def confirm_supabase_connection():
 # Auth: Sign Up
 # --------------------------------------------------
 
-@app.post("/auth/signup", status_code=201)
+@app.post("/auth/signup", status_code=201, tags=["Auth"])
 def signup(payload: SignupRequest):
 
     if not payload.email.strip() or not payload.password.strip():
@@ -175,7 +181,7 @@ def signup(payload: SignupRequest):
 # Auth: Log In
 # --------------------------------------------------
 
-@app.post("/auth/login")
+@app.post("/auth/login", tags=["Auth"])
 def login(payload: LoginRequest):
 
     if not payload.email.strip() or not payload.password.strip():
@@ -210,7 +216,7 @@ def login(payload: LoginRequest):
 # Public route
 # --------------------------------------------------
 
-@app.get("/public/info")
+@app.get("/public/info", tags=["Public"])
 def public_info():
     return {"message": "Welcome stranger! This info is public."}
 
@@ -222,7 +228,7 @@ def public_info():
 # (auth.get_current_user), applied to every protected route below.
 # --------------------------------------------------
 
-@app.get("/protected/profile")
+@app.get("/protected/profile", tags=["Protected"])
 def get_profile(user=Depends(get_current_user)):
     return {
         "id": user.id,
@@ -231,7 +237,7 @@ def get_profile(user=Depends(get_current_user)):
     }
 
 
-@app.get("/protected/dashboard")
+@app.get("/protected/dashboard", tags=["Protected"])
 def get_dashboard(user=Depends(get_current_user)):
     return {"message": f"Welcome to your dashboard, {user.email}"}
 
@@ -244,7 +250,7 @@ def get_dashboard(user=Depends(get_current_user)):
 # may not" (a logged-in user who isn't on the admin allowlist).
 # --------------------------------------------------
 
-@app.get("/protected/admin")
+@app.get("/protected/admin", tags=["Protected"])
 def get_admin_area(user=Depends(require_admin)):
     return {"message": f"Welcome, admin {user.email}"}
 
@@ -253,7 +259,7 @@ def get_admin_area(user=Depends(require_admin)):
 # Auth: Log Out
 # --------------------------------------------------
 
-@app.post("/auth/logout", status_code=204)
+@app.post("/auth/logout", status_code=204, tags=["Auth"])
 def logout(user=Depends(get_current_user)):
     try:
         supabase.auth.sign_out()
@@ -299,7 +305,7 @@ def health():
 # Results are sorted alphabetically.
 # --------------------------------------------------
 
-@app.get("/tasks")
+@app.get("/tasks", tags=["Tasks"])
 def get_tasks(
     search: str = None,
     done: bool = None
@@ -370,7 +376,7 @@ def get_tasks(
 # GET one task
 # --------------------------------------------------
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", tags=["Tasks"])
 def get_task(task_id: int):
 
     with get_connection() as conn:
@@ -406,7 +412,8 @@ def get_task(task_id: int):
 
 @app.post(
     "/tasks",
-    status_code=201
+    status_code=201,
+    tags=["Tasks"]
 )
 def create_task(task: Task):
 
@@ -442,7 +449,7 @@ def create_task(task: Task):
 # UPDATE task
 # --------------------------------------------------
 
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}", tags=["Tasks"])
 def update_task(
     task_id: int,
     updated_task: Task
@@ -491,7 +498,7 @@ def update_task(
 # DELETE task
 # --------------------------------------------------
 
-@app.delete("/tasks/{task_id}")
+@app.delete("/tasks/{task_id}", tags=["Tasks"])
 def delete_task(task_id: int):
 
     with get_connection() as conn:
@@ -525,7 +532,7 @@ def delete_task(task_id: int):
 # Statistics
 # --------------------------------------------------
 
-@app.get("/stats")
+@app.get("/stats", tags=["Tasks"])
 def get_stats():
 
     with get_connection() as conn:
