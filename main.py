@@ -4,13 +4,13 @@ import psycopg
 from psycopg.rows import dict_row
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Response, Request
+from fastapi import Depends, FastAPI, HTTPException, Response, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 from supabase import AuthApiError
 
-from auth import supabase
+from auth import get_current_user, supabase
 
 
 # --------------------------------------------------
@@ -55,6 +55,19 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=400,
         content={"error": "Invalid request data"}
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(
+    request: Request,
+    exc: HTTPException
+):
+    content = exc.detail if isinstance(exc.detail, dict) else {"error": exc.detail}
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=content
     )
 
 
@@ -203,41 +216,38 @@ def public_info():
 
 
 # --------------------------------------------------
-# Protected route
+# Protected routes
 #
-# Stage 3: the bearer token is verified with Supabase.
+# Stage 4: token verification lives in one reusable dependency
+# (auth.get_current_user), applied to every protected route below.
 # --------------------------------------------------
 
 @app.get("/protected/profile")
-def get_profile(request: Request):
-
-    auth_header = request.headers.get("Authorization")
-    scheme, _, token = (auth_header or "").partition(" ")
-
-    if scheme.lower() != "bearer" or not token:
-        return JSONResponse(
-            status_code=401,
-            content={"error": "Access token required"}
-        )
-
-    try:
-        response = supabase.auth.get_user(token)
-    except Exception:
-        response = None
-
-    if response is None or response.user is None:
-        return JSONResponse(
-            status_code=401,
-            content={"error": "Invalid or expired token"}
-        )
-
-    user = response.user
-
+def get_profile(user=Depends(get_current_user)):
     return {
         "id": user.id,
         "email": user.email,
         "created_at": user.created_at
     }
+
+
+@app.get("/protected/dashboard")
+def get_dashboard(user=Depends(get_current_user)):
+    return {"message": f"Welcome to your dashboard, {user.email}"}
+
+
+# --------------------------------------------------
+# Auth: Log Out
+# --------------------------------------------------
+
+@app.post("/auth/logout", status_code=204)
+def logout(user=Depends(get_current_user)):
+    try:
+        supabase.auth.sign_out()
+    except AuthApiError:
+        pass
+
+    return Response(status_code=204)
 
 
 # --------------------------------------------------
