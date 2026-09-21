@@ -194,6 +194,37 @@ def login(payload: LoginRequest):
 
 
 # --------------------------------------------------
+# Public route
+# --------------------------------------------------
+
+@app.get("/public/info")
+def public_info():
+    return {"message": "Welcome stranger! This info is public."}
+
+
+# --------------------------------------------------
+# Protected route
+#
+# Stage 2: only checks that a bearer token was presented.
+# The token itself is not verified with Supabase yet.
+# --------------------------------------------------
+
+@app.get("/protected/profile")
+def get_profile(request: Request):
+
+    auth_header = request.headers.get("Authorization")
+    scheme, _, token = (auth_header or "").partition(" ")
+
+    if scheme.lower() != "bearer" or not token:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Access token required"}
+        )
+
+    return {"message": "Token received (not yet verified)"}
+
+
+# --------------------------------------------------
 # Root
 # --------------------------------------------------
 
