@@ -205,8 +205,7 @@ def public_info():
 # --------------------------------------------------
 # Protected route
 #
-# Stage 2: only checks that a bearer token was presented.
-# The token itself is not verified with Supabase yet.
+# Stage 3: the bearer token is verified with Supabase.
 # --------------------------------------------------
 
 @app.get("/protected/profile")
@@ -221,7 +220,24 @@ def get_profile(request: Request):
             content={"error": "Access token required"}
         )
 
-    return {"message": "Token received (not yet verified)"}
+    try:
+        response = supabase.auth.get_user(token)
+    except Exception:
+        response = None
+
+    if response is None or response.user is None:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Invalid or expired token"}
+        )
+
+    user = response.user
+
+    return {
+        "id": user.id,
+        "email": user.email,
+        "created_at": user.created_at
+    }
 
 
 # --------------------------------------------------
