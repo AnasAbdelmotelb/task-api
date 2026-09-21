@@ -16,6 +16,9 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://taskuser:taskpass@db:5432/taskdb
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      ADMIN_EMAILS: ${ADMIN_EMAILS}
     depends_on:
       - db
 
