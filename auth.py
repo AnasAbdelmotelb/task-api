@@ -17,6 +17,12 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+ADMIN_EMAILS = {
+    email.strip().lower()
+    for email in os.getenv("ADMIN_EMAILS", "").split(",")
+    if email.strip()
+}
+
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
@@ -46,3 +52,18 @@ def get_current_user(
         )
 
     return response.user
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    """Same guard as get_current_user, plus an authorization check.
+
+    401 ("I don't know you") is handled by get_current_user above.
+    403 ("I know you, and no.") is the authorization check here.
+    """
+    if user.email is None or user.email.lower() not in ADMIN_EMAILS:
+        raise HTTPException(
+            status_code=403,
+            detail={"error": "Admin access required"}
+        )
+
+    return user

@@ -10,7 +10,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 from supabase import AuthApiError
 
-from auth import get_current_user, supabase
+from auth import get_current_user, require_admin, supabase
 
 
 # --------------------------------------------------
@@ -234,6 +234,19 @@ def get_profile(user=Depends(get_current_user)):
 @app.get("/protected/dashboard")
 def get_dashboard(user=Depends(get_current_user)):
     return {"message": f"Welcome to your dashboard, {user.email}"}
+
+
+# --------------------------------------------------
+# Protected route: admin only
+#
+# 401 = "I don't know who you are" (missing/invalid token, handled by
+# get_current_user). 403 = "I know exactly who you are, and you still
+# may not" (a logged-in user who isn't on the admin allowlist).
+# --------------------------------------------------
+
+@app.get("/protected/admin")
+def get_admin_area(user=Depends(require_admin)):
+    return {"message": f"Welcome, admin {user.email}"}
 
 
 # --------------------------------------------------
