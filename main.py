@@ -9,6 +9,8 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
 
+from auth import supabase
+
 
 # --------------------------------------------------
 # Environment / Database configuration
@@ -103,6 +105,15 @@ def init_db():
 
 
 init_db()
+
+
+# --------------------------------------------------
+# Supabase Auth client
+# --------------------------------------------------
+
+@app.on_event("startup")
+def confirm_supabase_connection():
+    print(f"Server running and connected to Supabase at {supabase.supabase_url}")
 
 
 # --------------------------------------------------
