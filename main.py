@@ -4,10 +4,13 @@ import psycopg
 from psycopg.rows import dict_row
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Response, Request
+from fastapi import Depends, FastAPI, HTTPException, Response, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel
+from supabase import AuthApiError
+
+from auth import get_current_user, require_admin, supabase
 
 
 # --------------------------------------------------
@@ -35,8 +38,14 @@ def get_connection():
 
 app = FastAPI(
     title="Task API",
-    description="A simple REST API for managing tasks",
-    version="1.0.0"
+    description="A simple REST API for managing tasks, secured with Supabase Auth",
+    version="1.0.0",
+    openapi_tags=[
+        {"name": "Auth", "description": "Sign up, log in, and log out via Supabase Auth."},
+        {"name": "Protected", "description": "Requires Authorization: Bearer <access_token>."},
+        {"name": "Public", "description": "No authentication required."},
+        {"name": "Tasks", "description": "Original A1-A3 task management endpoints."},
+    ]
 )
 
 
@@ -55,6 +64,19 @@ async def validation_exception_handler(
     )
 
 
+@app.exception_handler(HTTPException)
+async def http_exception_handler(
+    request: Request,
+    exc: HTTPException
+):
+    content = exc.detail if isinstance(exc.detail, dict) else {"error": exc.detail}
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=content
+    )
+
+
 # --------------------------------------------------
 # Models
 # --------------------------------------------------
@@ -62,6 +84,16 @@ async def validation_exception_handler(
 class Task(BaseModel):
     title: str
     done: bool = False
+
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 # --------------------------------------------------
@@ -106,6 +138,138 @@ init_db()
 
 
 # --------------------------------------------------
+# Supabase Auth client
+# --------------------------------------------------
+
+@app.on_event("startup")
+def confirm_supabase_connection():
+    print(f"Server running and connected to Supabase at {supabase.supabase_url}")
+
+
+# --------------------------------------------------
+# Auth: Sign Up
+# --------------------------------------------------
+
+@app.post("/auth/signup", status_code=201, tags=["Auth"])
+def signup(payload: SignupRequest):
+
+    if not payload.email.strip() or not payload.password.strip():
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Email and password are required"}
+        )
+
+    try:
+        result = supabase.auth.sign_up({
+            "email": payload.email,
+            "password": payload.password
+        })
+    except AuthApiError as e:
+        return JSONResponse(
+            status_code=400,
+            content={"error": str(e)}
+        )
+
+    return {
+        "id": result.user.id,
+        "email": result.user.email,
+        "created_at": result.user.created_at
+    }
+
+
+# --------------------------------------------------
+# Auth: Log In
+# --------------------------------------------------
+
+@app.post("/auth/login", tags=["Auth"])
+def login(payload: LoginRequest):
+
+    if not payload.email.strip() or not payload.password.strip():
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Email and password are required"}
+        )
+
+    try:
+        result = supabase.auth.sign_in_with_password({
+            "email": payload.email,
+            "password": payload.password
+        })
+    except AuthApiError:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Invalid login credentials"}
+        )
+
+    return {
+        "access_token": result.session.access_token,
+        "refresh_token": result.session.refresh_token,
+        "token_type": result.session.token_type,
+        "user": {
+            "id": result.user.id,
+            "email": result.user.email
+        }
+    }
+
+
+# --------------------------------------------------
+# Public route
+# --------------------------------------------------
+
+@app.get("/public/info", tags=["Public"])
+def public_info():
+    return {"message": "Welcome stranger! This info is public."}
+
+
+# --------------------------------------------------
+# Protected routes
+#
+# Stage 4: token verification lives in one reusable dependency
+# (auth.get_current_user), applied to every protected route below.
+# --------------------------------------------------
+
+@app.get("/protected/profile", tags=["Protected"])
+def get_profile(user=Depends(get_current_user)):
+    return {
+        "id": user.id,
+        "email": user.email,
+        "created_at": user.created_at
+    }
+
+
+@app.get("/protected/dashboard", tags=["Protected"])
+def get_dashboard(user=Depends(get_current_user)):
+    return {"message": f"Welcome to your dashboard, {user.email}"}
+
+
+# --------------------------------------------------
+# Protected route: admin only
+#
+# 401 = "I don't know who you are" (missing/invalid token, handled by
+# get_current_user). 403 = "I know exactly who you are, and you still
+# may not" (a logged-in user who isn't on the admin allowlist).
+# --------------------------------------------------
+
+@app.get("/protected/admin", tags=["Protected"])
+def get_admin_area(user=Depends(require_admin)):
+    return {"message": f"Welcome, admin {user.email}"}
+
+
+# --------------------------------------------------
+# Auth: Log Out
+# --------------------------------------------------
+
+@app.post("/auth/logout", status_code=204, tags=["Auth"])
+def logout(user=Depends(get_current_user)):
+    try:
+        supabase.auth.sign_out()
+    except AuthApiError:
+        pass
+
+    return Response(status_code=204)
+
+
+# --------------------------------------------------
 # Root
 # --------------------------------------------------
 
@@ -141,7 +305,7 @@ def health():
 # Results are sorted alphabetically.
 # --------------------------------------------------
 
-@app.get("/tasks")
+@app.get("/tasks", tags=["Tasks"])
 def get_tasks(
     search: str = None,
     done: bool = None
@@ -212,7 +376,7 @@ def get_tasks(
 # GET one task
 # --------------------------------------------------
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", tags=["Tasks"])
 def get_task(task_id: int):
 
     with get_connection() as conn:
@@ -248,7 +412,8 @@ def get_task(task_id: int):
 
 @app.post(
     "/tasks",
-    status_code=201
+    status_code=201,
+    tags=["Tasks"]
 )
 def create_task(task: Task):
 
@@ -284,7 +449,7 @@ def create_task(task: Task):
 # UPDATE task
 # --------------------------------------------------
 
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}", tags=["Tasks"])
 def update_task(
     task_id: int,
     updated_task: Task
@@ -333,7 +498,7 @@ def update_task(
 # DELETE task
 # --------------------------------------------------
 
-@app.delete("/tasks/{task_id}")
+@app.delete("/tasks/{task_id}", tags=["Tasks"])
 def delete_task(task_id: int):
 
     with get_connection() as conn:
@@ -367,7 +532,7 @@ def delete_task(task_id: int):
 # Statistics
 # --------------------------------------------------
 
-@app.get("/stats")
+@app.get("/stats", tags=["Tasks"])
 def get_stats():
 
     with get_connection() as conn:
