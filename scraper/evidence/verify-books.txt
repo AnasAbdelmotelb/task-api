@@ -1,0 +1,13 @@
+records 60
+unique_product_urls 60
+all_price_gbp_numeric True
+price_matches_text True
+all_urls_https True
+schema_revalidated_ok 60
+eight_raw_fields_plus_price True
+null_descriptions 0
+records_per_source_page {'page-1.html': 20, 'page-2.html': 20, 'page-3.html': 20}
+price_range_gbp 12.84 57.31
+ratings {'Three': 13, 'One': 15, 'Four': 10, 'Five': 14, 'Two': 8}
+errors_json []
+books_json_sha256 cd5978284133cc4cf3f6ad19dad458d4ff8a95156b89d9b729e2bb2eaecf3ebb

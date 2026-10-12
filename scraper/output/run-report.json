@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-10-12T17:03:22Z",
+  "finished_at": "2026-10-12T17:03:22Z",
+  "duration_seconds": 0.34,
+  "user_agent": "FlyRankInternship-A9/1.0 (+https://github.com/AnasAbdelmotelb/polite-scraper)",
+  "delay_seconds": 1.0,
+  "timeout_seconds": 10,
+  "robots_txt": {
+    "url": "https://books.toscrape.com/robots.txt",
+    "status": 404,
+    "checked_at": "2026-10-12T17:01:05Z",
+    "result": "no robots file found"
+  },
+  "catalogue_pages": 3,
+  "discovered_urls": 60,
+  "unique_urls": 60,
+  "injected_broken_url": null,
+  "detail_pages_attempted": 60,
+  "detail_pages_parsed": 60,
+  "pages_fetched": 0,
+  "cache_hits": 64,
+  "retries": 0,
+  "valid_records": 60,
+  "invalid_records": 0,
+  "duplicates_removed": 0,
+  "failed_pages": 0,
+  "failures": []
+}

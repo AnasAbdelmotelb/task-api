@@ -1,0 +1,15 @@
+# Cached HTML: the site should feel each page once, but it never goes in git
+cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,4 @@
+2026-10-12T17:00:52Z
+
+HTTP 200
+Scraping Sandbox Web Scraping Sandbox Books A fictional bookstore that desperately wants to be scraped. It's a safe place for beginners learning web scraping and for developers validating their scraping technologies as well. Available at: books.toscrape.com Details Amount of items 1000 Pagination ✔ Items per page max 20 Requires JavaScript ✘ Quotes A website that lists quotes from famous people. It has many endpoints showing the quotes in many different ways, each of them including new scraping challenges for you, as described below. Endpoints Default Microdata and pagination Scroll infinite scrolling pagination JavaScript JavaScript generated content Delayed Same as JavaScript but with a delay (?delay=10000) Tableful a table based messed-up layout Login login with CSRF token (any user/passwd works) ViewState an AJAX based filter form with ViewStates Random a single random quote
