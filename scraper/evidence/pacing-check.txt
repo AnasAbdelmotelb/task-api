@@ -1,0 +1,4 @@
+real requests with a recorded timestamp: 64
+distinct seconds: 64 (equal => never two requests in the same second)
+first: 2026-10-12T17:01:05+00:00 last: 2026-10-12T17:02:28+00:00 span_s: 83.0
+min gap (1 s timestamp resolution): 1.0 s

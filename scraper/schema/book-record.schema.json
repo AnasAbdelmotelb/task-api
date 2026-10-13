@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "description": "The shape of one finished, trusted record in output/books.json.",
+  "properties": {
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "product_url": {
+      "title": "Product Url",
+      "type": "string"
+    },
+    "price_text": {
+      "minLength": 1,
+      "title": "Price Text",
+      "type": "string"
+    },
+    "price_gbp": {
+      "minimum": 0,
+      "title": "Price Gbp",
+      "type": "number"
+    },
+    "availability_text": {
+      "minLength": 1,
+      "title": "Availability Text",
+      "type": "string"
+    },
+    "rating_text": {
+      "enum": [
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five"
+      ],
+      "title": "Rating Text",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "source_page": {
+      "title": "Source Page",
+      "type": "string"
+    },
+    "fetched_at": {
+      "title": "Fetched At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "product_url",
+    "price_text",
+    "price_gbp",
+    "availability_text",
+    "rating_text",
+    "source_page",
+    "fetched_at"
+  ],
+  "title": "BookRecord",
+  "type": "object"
+}

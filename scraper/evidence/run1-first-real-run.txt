@@ -1,0 +1,80 @@
+USER-AGENT FlyRankInternship-A9/1.0 (+https://github.com/AnasAbdelmotelb/polite-scraper) | delay=1.0s timeout=10s
+FETCH https://books.toscrape.com/robots.txt (HTTP 404)
+ROBOTS https://books.toscrape.com/robots.txt: no robots file found (HTTP 404)
+FETCH https://books.toscrape.com/catalogue/page-1.html (HTTP 200, 50469 bytes)
+FETCH https://books.toscrape.com/catalogue/page-2.html (HTTP 200, 50877 bytes)
+FETCH https://books.toscrape.com/catalogue/page-3.html (HTTP 200, 51374 bytes)
+catalogue_pages=3 discovered=60 unique_urls=60
+FETCH https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html (HTTP 200, 9279 bytes)
+FETCH https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html (HTTP 200, 10918 bytes)
+FETCH https://books.toscrape.com/catalogue/soumission_998/index.html (HTTP 200, 12431 bytes)
+FETCH https://books.toscrape.com/catalogue/sharp-objects_997/index.html (HTTP 200, 14847 bytes)
+FETCH https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html (HTTP 200, 17026 bytes)
+FETCH https://books.toscrape.com/catalogue/the-requiem-red_995/index.html (HTTP 200, 16468 bytes)
+FETCH https://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html (HTTP 200, 19806 bytes)
+FETCH https://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html (HTTP 200, 23375 bytes)
+FETCH https://books.toscrape.com/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html (HTTP 200, 20872 bytes)
+FETCH https://books.toscrape.com/catalogue/the-black-maria_991/index.html (HTTP 200, 22698 bytes)
+FETCH https://books.toscrape.com/catalogue/starving-hearts-triangular-trade-trilogy-1_990/index.html (HTTP 200, 19216 bytes)
+FETCH https://books.toscrape.com/catalogue/shakespeares-sonnets_989/index.html (HTTP 200, 18441 bytes)
+FETCH https://books.toscrape.com/catalogue/set-me-free_988/index.html (HTTP 200, 18286 bytes)
+FETCH https://books.toscrape.com/catalogue/scott-pilgrims-precious-little-life-scott-pilgrim-1_987/index.html (HTTP 200, 18760 bytes)
+FETCH https://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html (HTTP 200, 18360 bytes)
+FETCH https://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html (HTTP 200, 18795 bytes)
+FETCH https://books.toscrape.com/catalogue/olio_984/index.html (HTTP 200, 19527 bytes)
+FETCH https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html (HTTP 200, 19954 bytes)
+FETCH https://books.toscrape.com/catalogue/libertarianism-for-beginners_982/index.html (HTTP 200, 18956 bytes)
+FETCH https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html (HTTP 200, 19362 bytes)
+FETCH https://books.toscrape.com/catalogue/in-her-wake_980/index.html (HTTP 200, 18707 bytes)
+FETCH https://books.toscrape.com/catalogue/how-music-works_979/index.html (HTTP 200, 19635 bytes)
+FETCH https://books.toscrape.com/catalogue/foolproof-preserving-a-guide-to-small-batch-jams-jellies-pickles-condiments-and-more-a-foolproof-guide-to-making-small-batch-jams-jellies-pickles-condiments-and-more_978/index.html (HTTP 200, 19609 bytes)
+FETCH https://books.toscrape.com/catalogue/chase-me-paris-nights-2_977/index.html (HTTP 200, 19093 bytes)
+FETCH https://books.toscrape.com/catalogue/black-dust_976/index.html (HTTP 200, 18533 bytes)
+FETCH https://books.toscrape.com/catalogue/birdsong-a-story-in-pictures_975/index.html (HTTP 200, 18408 bytes)
+FETCH https://books.toscrape.com/catalogue/americas-cradle-of-quarterbacks-western-pennsylvanias-football-factory-from-johnny-unitas-to-joe-montana_974/index.html (HTTP 200, 20336 bytes)
+FETCH https://books.toscrape.com/catalogue/aladdin-and-his-wonderful-lamp_973/index.html (HTTP 200, 21091 bytes)
+FETCH https://books.toscrape.com/catalogue/worlds-elsewhere-journeys-around-shakespeares-globe_972/index.html (HTTP 200, 21781 bytes)
+FETCH https://books.toscrape.com/catalogue/wall-and-piece_971/index.html (HTTP 200, 18018 bytes)
+FETCH https://books.toscrape.com/catalogue/the-four-agreements-a-practical-guide-to-personal-freedom_970/index.html (HTTP 200, 18132 bytes)
+FETCH https://books.toscrape.com/catalogue/the-five-love-languages-how-to-express-heartfelt-commitment-to-your-mate_969/index.html (HTTP 200, 19289 bytes)
+FETCH https://books.toscrape.com/catalogue/the-elephant-tree_968/index.html (HTTP 200, 18811 bytes)
+FETCH https://books.toscrape.com/catalogue/the-bear-and-the-piano_967/index.html (HTTP 200, 17992 bytes)
+FETCH https://books.toscrape.com/catalogue/sophies-world_966/index.html (HTTP 200, 18632 bytes)
+FETCH https://books.toscrape.com/catalogue/penny-maybe_965/index.html (HTTP 200, 17010 bytes)
+FETCH https://books.toscrape.com/catalogue/maude-1883-1993she-grew-up-with-the-country_964/index.html (HTTP 200, 19216 bytes)
+FETCH https://books.toscrape.com/catalogue/in-a-dark-dark-wood_963/index.html (HTTP 200, 18098 bytes)
+FETCH https://books.toscrape.com/catalogue/behind-closed-doors_962/index.html (HTTP 200, 18767 bytes)
+FETCH https://books.toscrape.com/catalogue/you-cant-bury-them-all-poems_961/index.html (HTTP 200, 20803 bytes)
+FETCH https://books.toscrape.com/catalogue/slow-states-of-collapse-poems_960/index.html (HTTP 200, 19846 bytes)
+FETCH https://books.toscrape.com/catalogue/reasons-to-stay-alive_959/index.html (HTTP 200, 19186 bytes)
+FETCH https://books.toscrape.com/catalogue/private-paris-private-10_958/index.html (HTTP 200, 18681 bytes)
+FETCH https://books.toscrape.com/catalogue/higherselfie-wake-up-your-life-free-your-soul-find-your-tribe_957/index.html (HTTP 200, 20012 bytes)
+FETCH https://books.toscrape.com/catalogue/without-borders-wanderlove-1_956/index.html (HTTP 200, 19775 bytes)
+FETCH https://books.toscrape.com/catalogue/when-we-collided_955/index.html (HTTP 200, 17981 bytes)
+FETCH https://books.toscrape.com/catalogue/we-love-you-charlie-freeman_954/index.html (HTTP 200, 19326 bytes)
+FETCH https://books.toscrape.com/catalogue/untitled-collection-sabbath-poems-2014_953/index.html (HTTP 200, 19629 bytes)
+FETCH https://books.toscrape.com/catalogue/unseen-city-the-majesty-of-pigeons-the-discreet-charm-of-snails-other-wonders-of-the-urban-wilderness_952/index.html (HTTP 200, 20829 bytes)
+FETCH https://books.toscrape.com/catalogue/unicorn-tracks_951/index.html (HTTP 200, 18920 bytes)
+FETCH https://books.toscrape.com/catalogue/unbound-how-eight-technologies-made-us-human-transformed-society-and-brought-our-world-to-the-brink_950/index.html (HTTP 200, 20317 bytes)
+FETCH https://books.toscrape.com/catalogue/tsubasa-world-chronicle-2-tsubasa-world-chronicle-2_949/index.html (HTTP 200, 17968 bytes)
+FETCH https://books.toscrape.com/catalogue/throwing-rocks-at-the-google-bus-how-growth-became-the-enemy-of-prosperity_948/index.html (HTTP 200, 22294 bytes)
+FETCH https://books.toscrape.com/catalogue/this-one-summer_947/index.html (HTTP 200, 18552 bytes)
+FETCH https://books.toscrape.com/catalogue/thirst_946/index.html (HTTP 200, 19049 bytes)
+FETCH https://books.toscrape.com/catalogue/the-torch-is-passed-a-harding-family-story_945/index.html (HTTP 200, 25449 bytes)
+FETCH https://books.toscrape.com/catalogue/the-secret-of-dreadwillow-carse_944/index.html (HTTP 200, 19419 bytes)
+FETCH https://books.toscrape.com/catalogue/the-pioneer-woman-cooks-dinnertime-comfort-classics-freezer-food-16-minute-meals-and-other-delicious-ways-to-solve-supper_943/index.html (HTTP 200, 22024 bytes)
+FETCH https://books.toscrape.com/catalogue/the-past-never-ends_942/index.html (HTTP 200, 19106 bytes)
+FETCH https://books.toscrape.com/catalogue/the-natural-history-of-us-the-fine-art-of-pretending-2_941/index.html (HTTP 200, 19309 bytes)
+detail_pages=60
+sample raw record:
+{
+  "title": "A Light in the Attic",
+  "product_url": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+  "price_text": "£51.77",
+  "availability_text": "In stock (22 available)",
+  "rating_text": "Three",
+  "description": "It's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love th It's hard to imagine a world without A Light in the Attic. This now-classic collection of poetry and drawings from Shel Silverstein celebrates its 20th anniversary with this special edition. Silverstein's humorous and creative verse can amuse the dowdiest of readers. Lemon-faced adults and fidgety kids sit still and read these rhythmic words and laugh and smile and love that Silverstein. Need proof of his genius? RockabyeRockabye baby, in the treetopDon't you know a treetopIs no safe place to rock?And who put you up there,And your cradle, too?Baby, I think someone down here'sGot it in for you. Shel, you never sounded so good. ...more",
+  "source_page": "https://books.toscrape.com/catalogue/page-1.html",
+  "fetched_at": "2026-10-12T17:01:10Z"
+}
+REPORT valid=60 invalid=0 failed_pages=0 pages_fetched=64 cache_hits=0 retries=0 duration=85.48s -> output/run-report.json
