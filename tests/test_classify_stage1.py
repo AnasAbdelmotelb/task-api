@@ -136,16 +136,6 @@ def test_enabled_values_do_not_trigger_the_kill_switch(api, monkeypatch, value):
     assert res.headers["X-Classify-Source"] == "stub"
 
 
-# ---------- model path is not wired in Stage 1 ----------
-
-def test_model_path_returns_501_and_makes_no_call(api, fake_llm):
-    res = api.post(URL, json={"text": "Buy milk"})
-
-    assert res.status_code == 501
-    assert "error" in res.json()
-    assert fake_llm.calls == []
-
-
 # ---------- output schema ----------
 
 def valid_answer(**overrides):

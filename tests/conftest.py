@@ -28,19 +28,25 @@ VALID_ANSWER_JSON = (
 
 
 class FakeLLMClient:
-    """Records every call; returns a valid answer if it is ever called."""
+    """Records every call and returns `reply` (a valid answer by default)."""
 
-    def __init__(self):
+    def __init__(self, reply: str = VALID_ANSWER_JSON):
+        self.reply = reply
         self.calls = []
 
     def complete(self, system_prompt: str, user_content: str) -> str:
         self.calls.append((system_prompt, user_content))
-        return VALID_ANSWER_JSON
+        return self.reply
 
 
 @pytest.fixture(autouse=True)
-def no_network(monkeypatch):
-    """Fail any test that tries to open a network connection."""
+def no_network(request, monkeypatch):
+    """Fail any test that tries to open a network connection.
+
+    Only tests marked `live` (skipped unless LLM_LIVE=1) may connect.
+    """
+    if request.node.get_closest_marker("live"):
+        return
 
     def blocked(*args, **kwargs):
         raise AssertionError("Network access is not allowed in tests")

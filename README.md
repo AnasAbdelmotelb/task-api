@@ -189,11 +189,23 @@ Broken request (empty `text`, returns `400` naming the field):
 curl -s -X POST http://localhost:8000/tasks/classify -H "Content-Type: application/json" -d '{"text": ""}'
 ```
 
+With both switches off, the endpoint sends the prompt in [`prompts/classify-v1.md`](prompts/classify-v1.md) as the system message and the task as a separate, JSON-encoded user message to the model set by the three `LLM_*` variables (temperature 0, at most 200 output tokens, `LLM_TIMEOUT_SECONDS` default 30). The OpenAI SDK's own retries are turned off (`max_retries=0`); the retry policy comes in Stage 4. A missing `LLM_*` variable returns `503` naming it.
+
+> **Stage 2 only:** the model path returns the model's raw text as `text/plain`, so its answers can be read as they are. Stage 3 replaces this with parsing and schema validation, and raw model text is then never returned.
+
 The classify tests run without Postgres, Supabase or a model:
 
 ```bash
 python -m pytest -q tests
 ```
+
+The live test sends three inputs to the real model, one call each, and prints its raw answers (needs Ollama running; add `-k report` to send just one):
+
+```bash
+LLM_LIVE=1 python -m pytest -q -s tests/test_classify_live.py
+```
+
+**What surprised me (prompt `classify-v1`, `llama3.2:3b` on Ollama, 2026-10-15):** all three answers came back as bare JSON in the right shape, with no code fences. But the model did not always follow the rules: "Email the client the Q3 report by Friday" was rated `high` although the prompt keeps `high` for urgent, overdue, today or tomorrow, and "maybe learn some Spanish at some point" became `study` with confidence 0.4 instead of `other` below 0.5. That is why `needs_review` is computed by our code from the confidence, not trusted to the model.
 
 ## Authentication Flow
 

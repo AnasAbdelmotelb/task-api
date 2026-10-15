@@ -1,7 +1,8 @@
 """Decides how a classify request is answered: kill switch, stub, or model."""
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
-from src.llm.client import LLMClient
+from src.llm.client import LLMClient, LLMNotConfiguredError
+from src.llm.prompt import build_user_message, load_system_prompt
 from src.llm.schema import (
     Category,
     ClassifyResponse,
@@ -26,13 +27,9 @@ DISABLED_ANSWER = ModelAnswer(
 )
 
 
-class ModelNotWiredError(Exception):
-    """Raised until Stage 2 connects the real model call."""
-
-
 def classify_text(
     text: str, client: Optional[LLMClient]
-) -> Tuple[ClassifyResponse, str]:
+) -> Tuple[Union[ClassifyResponse, str], str]:
     """Return the response and its source: "disabled", "stub" or "model"."""
     if not llm_enabled():
         return ClassifyResponse.from_answer(DISABLED_ANSWER), "disabled"
@@ -40,4 +37,9 @@ def classify_text(
     if stub_mode():
         return ClassifyResponse.from_answer(STUB_ANSWER), "stub"
 
-    raise ModelNotWiredError("The model call is added in Stage 2.")
+    if client is None:
+        raise LLMNotConfiguredError("No LLM client is available")
+
+    # Stage 2 (temporary, as the brief says): return the model's text as it
+    # came back. Stage 3 parses and validates it and never returns raw text.
+    return client.complete(load_system_prompt(), build_user_message(text)), "model"

@@ -3,11 +3,11 @@ from typing import Callable, Optional
 
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.routing import APIRoute
 
-from src.llm.classifier import ModelNotWiredError, classify_text
-from src.llm.client import LLMClient, get_llm_client
+from src.llm.classifier import classify_text
+from src.llm.client import LLMClient, LLMNotConfiguredError, get_llm_client
 from src.llm.schema import ClassifyRequest, ClassifyResponse
 
 
@@ -53,7 +53,7 @@ router = APIRouter(tags=["Tasks"], route_class=FieldNamingRoute)
     response_model=ClassifyResponse,
     responses={
         400: {"description": "Invalid input; the response names the field"},
-        501: {"description": "Model call not connected yet"},
+        503: {"description": "The LLM is not configured"},
     },
 )
 def classify_task(
@@ -63,8 +63,14 @@ def classify_task(
 ):
     try:
         result, source = classify_text(payload.text, client)
-    except ModelNotWiredError as exc:
-        return JSONResponse(status_code=501, content={"error": str(exc)})
+    except LLMNotConfiguredError as exc:
+        return JSONResponse(
+            status_code=503, content={"error": f"LLM is not configured: {exc}"}
+        )
+
+    if isinstance(result, str):
+        # Stage 2 only: the model's raw text. Stage 3 replaces this.
+        return PlainTextResponse(result, headers={"X-Classify-Source": source})
 
     response.headers["X-Classify-Source"] = source
     return result
