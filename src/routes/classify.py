@@ -6,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
+from src.llm.calls import LLMCallError, retry_after_header
 from src.llm.classifier import ModelAnswerRejected, classify_text
 from src.llm.client import LLMClient, LLMNotConfiguredError, get_llm_client
 from src.llm.schema import PROMPT_VERSION, ClassifyRequest, ClassifyResponse
@@ -54,7 +55,9 @@ router = APIRouter(tags=["Tasks"], route_class=FieldNamingRoute)
     responses={
         400: {"description": "Invalid input; the response names the field"},
         422: {"description": "The model's answer failed validation after one repair"},
-        503: {"description": "The LLM is not configured"},
+        502: {"description": "The LLM provider rejected the request or kept failing"},
+        503: {"description": "The LLM is not configured, unreachable or rate-limited"},
+        504: {"description": "The model did not answer in time"},
     },
 )
 def classify_task(
@@ -73,6 +76,13 @@ def classify_task(
                 "reason": str(exc),
                 "prompt_version": PROMPT_VERSION,
             },
+        )
+    except LLMCallError as exc:
+        header = retry_after_header(exc.retry_after)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"error": exc.message},
+            headers={"Retry-After": header} if header else None,
         )
     except LLMNotConfiguredError as exc:
         return JSONResponse(

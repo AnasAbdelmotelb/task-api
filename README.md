@@ -189,7 +189,11 @@ Broken request (empty `text`, returns `400` naming the field):
 curl -s -X POST http://localhost:8000/tasks/classify -H "Content-Type: application/json" -d '{"text": ""}'
 ```
 
-With both switches off, the endpoint sends the prompt in [`prompts/classify-v1.md`](prompts/classify-v1.md) as the system message and the task as a separate, JSON-encoded user message to the model set by the three `LLM_*` variables (temperature 0, at most 200 output tokens, `LLM_TIMEOUT_SECONDS` default 30). The OpenAI SDK's own retries are turned off (`max_retries=0`); the retry policy comes in Stage 4. A missing `LLM_*` variable returns `503` naming it.
+With both switches off, the endpoint sends the prompt in [`prompts/classify-v1.md`](prompts/classify-v1.md) as the system message and the task as a separate, JSON-encoded user message to the model set by the three `LLM_*` variables (temperature 0, at most 200 output tokens, `LLM_TIMEOUT_SECONDS` default 30). A missing `LLM_*` variable returns `503` naming it.
+
+**Retries:** the OpenAI SDK's own retries are switched off (`max_retries=0`) and our own policy is used instead, so one log line always means one real call. Timeouts, `429` and `5xx` are retried up to 3 times after 1 s, 2 s and 4 s plus up to 0.5 s of jitter; a `Retry-After` header (seconds or HTTP date) is obeyed instead, and one longer than 20 s ends the request with `503` and the same `Retry-After`. `400`, `401`, `403`, other `4xx` and connection errors are never retried. When retries run out: timeout → `504`, rate limit → `503`, provider error → `502`. The repair call has its own retries, so the worst case is 2 × 4 calls.
+
+**Cost log:** every model call writes one JSON line to stdout with the prompt version, model, input and output tokens, duration and repair count, and every request writes a summary line. `LLM_ENABLED=false` and `LLM_STUB=1` log `"model_calls": 0`. Task text, prompts and keys are never logged.
 
 The model's text is never returned. Our code strips any code fence or chatter around the JSON object, validates it against the schema, and if it fails asks the model once more with its broken answer and the exact validation error. If that repair also fails, the endpoint returns `422` and appends the input, both raw answers, both errors and the prompt version to `logs/quarantine.jsonl` (git-ignored).
 
