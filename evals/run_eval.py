@@ -4,7 +4,7 @@ The key field is `category`. Priority and the when-unsure flag are reported
 too. Start the API first (for example `docker compose up -d`), then:
 
     python evals/run_eval.py
-    python evals/run_eval.py --base-url http://localhost:8000 --out evals/results.json
+    python evals/run_eval.py --base-url http://localhost:8000 --out evals/results-classify-v1.json
 
 Each case is one request to the endpoint (one model call, two if repaired).
 """

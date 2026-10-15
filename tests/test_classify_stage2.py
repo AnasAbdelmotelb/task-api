@@ -28,8 +28,9 @@ def test_prompt_file_is_versioned_and_loaded_from_prompts_dir():
     assert load_system_prompt() == path.read_text(encoding="utf-8")
 
 
-def test_prompt_lists_every_allowed_value_and_the_unsure_rule():
-    prompt = load_system_prompt()
+@pytest.mark.parametrize("version", [PROMPT_VERSION, "classify-v1", "classify-v2"])
+def test_prompt_lists_every_allowed_value_and_the_unsure_rule(version):
+    prompt = load_system_prompt(version)
 
     for value in ("work", "study", "personal", "errand", "other", "low", "normal", "high"):
         assert f'"{value}"' in prompt
