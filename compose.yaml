@@ -19,6 +19,15 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_KEY: ${SUPABASE_KEY}
       ADMIN_EMAILS: ${ADMIN_EMAILS}
+      LLM_ENABLED: ${LLM_ENABLED:-true}
+      LLM_STUB: ${LLM_STUB:-0}
+      # Inside the container "localhost" is the container itself, so the
+      # model URL has its own variable. The default reaches Ollama on the
+      # host through Docker Desktop's host.docker.internal.
+      LLM_BASE_URL: ${LLM_DOCKER_BASE_URL:-http://host.docker.internal:11434/v1/}
+      LLM_API_KEY: ${LLM_API_KEY:-ollama}
+      LLM_MODEL: ${LLM_MODEL:-llama3.2:3b}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-30}
     depends_on:
       - db
 

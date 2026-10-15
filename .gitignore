@@ -2,4 +2,6 @@ __pycache__/
 *.pyc
 tasks.db
 .env
+.venv/
+logs/
 

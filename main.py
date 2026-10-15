@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from supabase import AuthApiError
 
 from auth import get_current_user, require_admin, supabase
+from src.routes.classify import router as classify_router
 
 
 # --------------------------------------------------
@@ -292,6 +293,14 @@ def health():
     return {
         "status": "ok"
     }
+
+
+# --------------------------------------------------
+# Classify a task description with an LLM (BE-07)
+# Defined in src/routes/classify.py
+# --------------------------------------------------
+
+app.include_router(classify_router)
 
 
 # --------------------------------------------------

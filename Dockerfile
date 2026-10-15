@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 COPY auth.py .
 COPY repository.py .
+COPY src/ src/
+COPY prompts/ prompts/
 
 EXPOSE 8000
 

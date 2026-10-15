@@ -1,0 +1,120 @@
+{
+  "total": 8,
+  "category_matched": 6,
+  "priority_matched": 5,
+  "unsure_flagged": 2,
+  "unsure_total": 2,
+  "prompt_versions": [
+    "classify-v2"
+  ],
+  "rows": [
+    {
+      "id": "work-standup",
+      "kind": "typical",
+      "status": 200,
+      "expected_category": "work",
+      "got_category": "work",
+      "category_ok": true,
+      "expected_priority": "normal",
+      "got_priority": "normal",
+      "priority_ok": true,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "study-deadline",
+      "kind": "typical",
+      "status": 200,
+      "expected_category": "study",
+      "got_category": "work",
+      "category_ok": false,
+      "expected_priority": "high",
+      "got_priority": "high",
+      "priority_ok": true,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "personal-birthday",
+      "kind": "typical",
+      "status": 200,
+      "expected_category": "personal",
+      "got_category": "personal",
+      "category_ok": true,
+      "expected_priority": "normal",
+      "got_priority": "normal",
+      "priority_ok": true,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "errand-passport",
+      "kind": "typical",
+      "status": 200,
+      "expected_category": "errand",
+      "got_category": "work",
+      "category_ok": false,
+      "expected_priority": "normal",
+      "got_priority": "high",
+      "priority_ok": false,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "ambiguous-library",
+      "kind": "ambiguous",
+      "status": 200,
+      "expected_category": "errand",
+      "got_category": "errand",
+      "category_ok": true,
+      "expected_priority": "high",
+      "got_priority": "high",
+      "priority_ok": true,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "ambiguous-manager-article",
+      "kind": "ambiguous",
+      "status": 200,
+      "expected_category": "work",
+      "got_category": "work",
+      "category_ok": true,
+      "expected_priority": "normal",
+      "got_priority": "normal",
+      "priority_ok": true,
+      "confidence": 0.9,
+      "needs_review": false
+    },
+    {
+      "id": "unsure-vague",
+      "kind": "unsure",
+      "status": 200,
+      "expected_category": "other",
+      "got_category": "other",
+      "category_ok": true,
+      "expected_priority": "normal",
+      "got_priority": "low",
+      "priority_ok": false,
+      "confidence": 0.4,
+      "needs_review": true,
+      "needs_review_ok": true
+    },
+    {
+      "id": "unsure-injection",
+      "kind": "unsure",
+      "status": 200,
+      "expected_category": "other",
+      "got_category": "other",
+      "category_ok": true,
+      "expected_priority": "normal",
+      "got_priority": "low",
+      "priority_ok": false,
+      "confidence": 0.1,
+      "needs_review": true,
+      "needs_review_ok": true
+    }
+  ],
+  "date": "2026-10-15T14:58:13+00:00",
+  "base_url": "http://localhost:8000"
+}
