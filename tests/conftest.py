@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.llm.client import get_llm_client  # noqa: E402
+from src.llm.client import LLMResult, get_llm_client  # noqa: E402
 from src.routes.classify import router  # noqa: E402
 
 
@@ -28,15 +28,33 @@ VALID_ANSWER_JSON = (
 
 
 class FakeLLMClient:
-    """Records every call and returns `reply` (a valid answer by default)."""
+    """Records every call and plays back scripted replies.
 
-    def __init__(self, reply: str = VALID_ANSWER_JSON):
-        self.reply = reply
+    Each reply is the model's text, or an exception to raise. The last reply
+    repeats once the script runs out.
+    """
+
+    def __init__(self, *replies):
+        self.replies = list(replies) or [VALID_ANSWER_JSON]
         self.calls = []
 
-    def complete(self, system_prompt: str, user_content: str) -> str:
-        self.calls.append((system_prompt, user_content))
-        return self.reply
+    def script(self, *replies):
+        self.replies = list(replies)
+
+    def complete(self, messages):
+        self.calls.append(messages)
+        reply = self.replies[min(len(self.calls), len(self.replies)) - 1]
+        if isinstance(reply, Exception):
+            raise reply
+        return LLMResult(text=reply, model="fake-model", input_tokens=120, output_tokens=30)
+
+
+@pytest.fixture(autouse=True)
+def quarantine_file(tmp_path, monkeypatch):
+    """Quarantine lines go to a temp file, never to the repo's logs/."""
+    path = tmp_path / "quarantine.jsonl"
+    monkeypatch.setenv("LLM_QUARANTINE_PATH", str(path))
+    return path
 
 
 @pytest.fixture(autouse=True)

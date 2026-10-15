@@ -1,6 +1,7 @@
 """The model client. Tests replace get_llm_client with a fake."""
 import os
-from typing import Optional, Protocol
+from dataclasses import dataclass
+from typing import List, Optional, Protocol
 
 from openai import OpenAI
 
@@ -10,9 +11,17 @@ MAX_TIMEOUT_SECONDS = 60.0
 MAX_OUTPUT_TOKENS = 200
 
 
+@dataclass
+class LLMResult:
+    text: str
+    model: str
+    input_tokens: Optional[int] = None
+    output_tokens: Optional[int] = None
+
+
 class LLMClient(Protocol):
-    def complete(self, system_prompt: str, user_content: str) -> str:
-        """Send one request to the model and return its raw text."""
+    def complete(self, messages: List[dict]) -> LLMResult:
+        """Send one chat request to the model and return its raw answer."""
         ...
 
 
@@ -57,17 +66,21 @@ class OpenAICompatClient:
             max_retries=0,  # no silent SDK retries; our own policy comes in Stage 4
         )
 
-    def complete(self, system_prompt: str, user_content: str) -> str:
+    def complete(self, messages: List[dict]) -> LLMResult:
+        model = os.getenv("LLM_MODEL", "").strip()
         response = self.build().chat.completions.create(
-            model=os.environ["LLM_MODEL"],
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_content},
-            ],
+            model=model,
+            messages=messages,
             temperature=0,
             max_tokens=MAX_OUTPUT_TOKENS,
         )
-        return response.choices[0].message.content or ""
+        usage = response.usage
+        return LLMResult(
+            text=response.choices[0].message.content or "",
+            model=response.model or model,
+            input_tokens=usage.prompt_tokens if usage else None,
+            output_tokens=usage.completion_tokens if usage else None,
+        )
 
 
 def get_llm_client() -> Optional[LLMClient]:

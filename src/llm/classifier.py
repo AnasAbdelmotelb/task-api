@@ -1,9 +1,13 @@
 """Decides how a classify request is answered: kill switch, stub, or model."""
-from typing import Optional, Tuple, Union
+import os
+from typing import Optional, Tuple
 
 from src.llm.client import LLMClient, LLMNotConfiguredError
-from src.llm.prompt import build_user_message, load_system_prompt
+from src.llm.parsing import AnswerRejected, parse_answer
+from src.llm.prompt import build_messages, build_repair_messages
+from src.llm.quarantine import quarantine
 from src.llm.schema import (
+    PROMPT_VERSION,
     Category,
     ClassifyResponse,
     ModelAnswer,
@@ -27,9 +31,13 @@ DISABLED_ANSWER = ModelAnswer(
 )
 
 
+class ModelAnswerRejected(Exception):
+    """Both the first answer and the one repair failed validation."""
+
+
 def classify_text(
     text: str, client: Optional[LLMClient]
-) -> Tuple[Union[ClassifyResponse, str], str]:
+) -> Tuple[ClassifyResponse, str]:
     """Return the response and its source: "disabled", "stub" or "model"."""
     if not llm_enabled():
         return ClassifyResponse.from_answer(DISABLED_ANSWER), "disabled"
@@ -40,6 +48,27 @@ def classify_text(
     if client is None:
         raise LLMNotConfiguredError("No LLM client is available")
 
-    # Stage 2 (temporary, as the brief says): return the model's text as it
-    # came back. Stage 3 parses and validates it and never returns raw text.
-    return client.complete(load_system_prompt(), build_user_message(text)), "model"
+    messages = build_messages(text)
+    first = client.complete(messages)
+    try:
+        return ClassifyResponse.from_answer(parse_answer(first.text)), "model"
+    except AnswerRejected as exc:
+        first_error = str(exc)
+
+    # Repair once, and only once.
+    second = client.complete(build_repair_messages(messages, first.text, first_error))
+    try:
+        return ClassifyResponse.from_answer(parse_answer(second.text)), "model"
+    except AnswerRejected as exc:
+        second_error = str(exc)
+
+    quarantine(
+        text=text,
+        prompt_version=PROMPT_VERSION,
+        model=second.model or os.getenv("LLM_MODEL", ""),
+        attempts=[
+            {"raw": first.text, "error": first_error},
+            {"raw": second.text, "error": second_error},
+        ],
+    )
+    raise ModelAnswerRejected(second_error)

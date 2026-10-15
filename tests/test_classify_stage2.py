@@ -6,11 +6,10 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from src.llm import client as client_module
-from src.llm.client import OpenAICompatClient, LLMNotConfiguredError
+from src.llm.client import LLMNotConfiguredError, LLMResult, OpenAICompatClient
 from src.llm.prompt import PROMPTS_DIR, build_user_message, load_system_prompt
 from src.llm.schema import PROMPT_VERSION
 from src.routes.classify import router
-from conftest import VALID_ANSWER_JSON
 
 URL = "/tasks/classify"
 LLM_ENV = {
@@ -48,37 +47,17 @@ def test_user_text_is_json_encoded():
 
 # ---------- the model path through the endpoint ----------
 
-@pytest.mark.parametrize(
-    "reply",
-    [
-        VALID_ANSWER_JSON,
-        "Sure! It is a work task.",
-        '```json\n{"category": "shopping"}\n```',
-    ],
-)
-def test_stage2_returns_the_models_raw_text_unchanged(api, fake_llm, reply):
-    # Temporary, as the brief's Stage 2 says. Stage 3 parses and validates.
-    fake_llm.reply = reply
-
-    res = api.post(URL, json={"text": "Send the invoice to the client"})
-
-    assert res.status_code == 200
-    assert res.headers["X-Classify-Source"] == "model"
-    assert res.headers["content-type"].startswith("text/plain")
-    assert res.text == reply
-    assert len(fake_llm.calls) == 1
-
-
 def test_model_gets_prompt_as_system_and_task_as_separate_user_message(api, fake_llm):
     text = "Revise chapter 3 before the exam"
 
     api.post(URL, json={"text": text})
 
     assert len(fake_llm.calls) == 1
-    system_prompt, user_content = fake_llm.calls[0]
-    assert system_prompt == load_system_prompt()
-    assert text not in system_prompt
-    assert json.loads(user_content) == {"task_text": text}
+    system, user = fake_llm.calls[0]
+    assert system == {"role": "system", "content": load_system_prompt()}
+    assert text not in system["content"]
+    assert user["role"] == "user"
+    assert json.loads(user["content"]) == {"task_text": text}
 
 
 def test_invalid_input_still_returns_400_before_any_model_call(api, fake_llm):
@@ -170,16 +149,20 @@ def test_real_client_sends_low_temperature_and_capped_tokens(monkeypatch):
             sent.update(kwargs)
             message = type("M", (), {"content": "{}"})()
             choice = type("C", (), {"message": message})()
-            return type("R", (), {"choices": [choice]})()
+            usage = type("U", (), {"prompt_tokens": 321, "completion_tokens": 45})()
+            return type("R", (), {"choices": [choice], "usage": usage, "model": "llama3.2:3b"})()
 
     class FakeSDK:
         def __init__(self, **kwargs):
             self.chat = type("Chat", (), {"completions": FakeCompletions()})()
 
     monkeypatch.setattr(client_module, "OpenAI", FakeSDK)
+    messages = [{"role": "system", "content": "s"}, {"role": "user", "content": "u"}]
 
-    assert OpenAICompatClient().complete("system", "user") == "{}"
+    result = OpenAICompatClient().complete(messages)
+
+    assert result == LLMResult(text="{}", model="llama3.2:3b", input_tokens=321, output_tokens=45)
     assert sent["model"] == "llama3.2:3b"
     assert sent["temperature"] == 0
     assert sent["max_tokens"] == 200
-    assert [m["role"] for m in sent["messages"]] == ["system", "user"]
+    assert sent["messages"] == messages

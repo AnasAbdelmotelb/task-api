@@ -191,7 +191,7 @@ curl -s -X POST http://localhost:8000/tasks/classify -H "Content-Type: applicati
 
 With both switches off, the endpoint sends the prompt in [`prompts/classify-v1.md`](prompts/classify-v1.md) as the system message and the task as a separate, JSON-encoded user message to the model set by the three `LLM_*` variables (temperature 0, at most 200 output tokens, `LLM_TIMEOUT_SECONDS` default 30). The OpenAI SDK's own retries are turned off (`max_retries=0`); the retry policy comes in Stage 4. A missing `LLM_*` variable returns `503` naming it.
 
-> **Stage 2 only:** the model path returns the model's raw text as `text/plain`, so its answers can be read as they are. Stage 3 replaces this with parsing and schema validation, and raw model text is then never returned.
+The model's text is never returned. Our code strips any code fence or chatter around the JSON object, validates it against the schema, and if it fails asks the model once more with its broken answer and the exact validation error. If that repair also fails, the endpoint returns `422` and appends the input, both raw answers, both errors and the prompt version to `logs/quarantine.jsonl` (git-ignored).
 
 The classify tests run without Postgres, Supabase or a model:
 

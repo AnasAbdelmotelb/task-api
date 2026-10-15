@@ -4,7 +4,7 @@ Skipped unless LLM_LIVE=1. With Ollama running and llama3.2:3b pulled:
 
     LLM_LIVE=1 python -m pytest -q -s tests/test_classify_live.py
 
-Each input is one model call; pick one with -k, e.g. -k report.
+Each input is one model call (two if a repair is needed); pick one with -k report.
 """
 import os
 
@@ -14,6 +14,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from src.llm.client import get_llm_client
+from src.llm.schema import ClassifyResponse
 from src.routes.classify import router
 
 INPUTS = {
@@ -39,10 +40,11 @@ def test_real_model_answers_through_the_endpoint(monkeypatch, text):
     api = TestClient(app)
 
     res = api.post("/tasks/classify", json={"text": text})
-    print(f"\nINPUT : {text}\nSTATUS: {res.status_code} {res.headers.get('content-type')}"
-          f"\nSOURCE: {res.headers.get('x-classify-source')}\nRAW   : {res.text!r}")
+    print(f"\nINPUT : {text}\nSTATUS: {res.status_code}\nBODY  : {res.text}")
 
-    # Stage 2 returns the model's raw text; Stage 3 adds parsing and validation.
-    assert res.status_code == 200
-    assert res.headers["X-Classify-Source"] == "model"
-    assert res.text.strip()
+    # A real model may still fail twice; then the contract is a clean 422.
+    assert res.status_code in (200, 422)
+    assert res.headers["content-type"] == "application/json"
+    if res.status_code == 200:
+        assert res.headers["X-Classify-Source"] == "model"
+        ClassifyResponse.model_validate(res.json())
