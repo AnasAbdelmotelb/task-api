@@ -19,6 +19,8 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_KEY: ${SUPABASE_KEY}
       ADMIN_EMAILS: ${ADMIN_EMAILS}
+      LLM_ENABLED: ${LLM_ENABLED:-true}
+      LLM_STUB: ${LLM_STUB:-0}
     depends_on:
       - db
 

@@ -164,6 +164,37 @@ docker compose down
 | DELETE | `/tasks/{task_id}` | Delete a task |
 | GET | `/stats` | Retrieve task statistics |
 
+### Task Classification (BE-07)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/tasks/classify` | File a task description under a category and priority (see `JOB-CARD.md`) |
+
+Request body: `{"text": "..."}` with 1–500 characters. Invalid input returns `400` with the offending `field` before any model call.
+
+Two switches control the model call:
+
+- `LLM_STUB=1` returns a fixed, schema-valid answer without calling the model.
+- `LLM_ENABLED=false` is the kill switch: no model call, and a fallback answer with `category: "other"` and `needs_review: true`.
+
+Valid request (with `LLM_STUB=1`, returns `200`):
+
+```bash
+curl -s -X POST http://localhost:8000/tasks/classify -H "Content-Type: application/json" -d '{"text": "Email the client the Q3 report by Friday"}'
+```
+
+Broken request (empty `text`, returns `400` naming the field):
+
+```bash
+curl -s -X POST http://localhost:8000/tasks/classify -H "Content-Type: application/json" -d '{"text": ""}'
+```
+
+The classify tests run without Postgres, Supabase or a model:
+
+```bash
+python -m pytest -q tests
+```
+
 ## Authentication Flow
 
 ### Sign Up
