@@ -84,6 +84,8 @@ SUPABASE_KEY=YOUR_SUPABASE_ANON_KEY
 ADMIN_EMAILS=admin@example.com
 ```
 
+The LLM provider is set by three variables, `LLM_BASE_URL`, `LLM_API_KEY` and `LLM_MODEL`, and these three values are the only difference between a model running locally in Ollama and one hosted on OpenRouter, which is why no provider is hard-coded.
+
 An example configuration is provided in `.env.example`.
 
 > Real credentials and secrets should not be committed to the repository. `.env` is git-ignored.
